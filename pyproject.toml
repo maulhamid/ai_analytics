@@ -5,9 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "asyncpg==0.30.0",
     "mcp[cli]==1.10.1",
-    "psycopg==3.2.9",
 ]
-
-[project.optional-dependencies]
-mcp = ["mcp[cli]==1.10.1"]
