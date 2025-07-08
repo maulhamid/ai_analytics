@@ -94,7 +94,7 @@ class PostgreReadOnly:
             "alter",
             "truncate",
         ]
-        return query.startswith("select") and not any(kw in query for kw in forbidden)
+        return query.startswith("select") and any(kw not in query for kw in forbidden)
 
     async def _execute_query(self, query: str) -> list[dict[str, Any]]:
         """
