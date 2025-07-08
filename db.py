@@ -27,6 +27,14 @@ class PostgreReadOnly:
         f"host={self._host} "
         f"port={self._port}"
 
+    def check_connection(self) -> bool:
+        try:
+            with psycopg.connect(self._conninfo) as conn:
+                conn.execute("SELECT 1")
+                return True
+        except Exception:
+            return False
+
     async def _get_db_schema(self) -> list[dict[str, Any]]:
         """
         Get the database schema.

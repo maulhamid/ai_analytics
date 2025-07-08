@@ -4,4 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["mcp[cli]==1.10.1", "polars==1.31.0", "psycopg[async]==3.2.9"]
+dependencies = [
+    "mcp[cli]==1.10.1",
+    "psycopg==3.2.9",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp[cli]==1.10.1"]
