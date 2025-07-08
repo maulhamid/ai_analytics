@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import asyncpg
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 
 class PostgreReadOnly:
@@ -151,45 +151,14 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 mcp = FastMCP("local-postgres", dependencies=["asyncpg"], lifespan=app_lifespan)
 
 
-def get_postgres_config():
-    """Get PostgreSQL configuration from environment variables."""
-    return {
-        "host": "localhost",
-        "port": 5432,
-        "db": "learning_management_system",
-        "user": "postgres",
-        "password": "postgres",
-    }
-
-
-@mcp.resource("postgres://schema")
-async def get_database_schema() -> str:
-    """Get complete database schema information."""
-    config = get_postgres_config()
-    db = PostgreReadOnly(**config)
-    schema = await db._get_db_schema()
-    return json.dumps(schema, indent=2, default=str)
-
-
-@mcp.resource("postgres://tables")
-async def get_database_tables() -> str:
-    """Get list of all tables in the database."""
-    config = get_postgres_config()
-    db = PostgreReadOnly(**config)
-    tables = await db.get_tables()
-    return json.dumps(tables, indent=2)
-
-
 @mcp.tool("execute_query")
-async def execute_query(query: str) -> str:
+async def execute_query(ctx: Context, query: str) -> str:
     """Execute a read-only SQL query on the PostgreSQL database.
 
     Args:
         query: The SQL SELECT query to execute
     """
-    config = get_postgres_config()
-    db = PostgreReadOnly(**config)
-
+    db = ctx.request_context.lifespan_context.db
     try:
         results = await db._execute_query(query)
         return json.dumps(results, indent=2, default=str)
@@ -198,14 +167,13 @@ async def execute_query(query: str) -> str:
 
 
 @mcp.tool("get_schema")
-async def get_schema(table_name: str | None = None) -> str:
+async def get_schema(ctx: Context, table_name: str | None = None) -> str:
     """Get the database schema information.
 
     Args:
         table_name: Optional specific table name to get schema for
     """
-    config = get_postgres_config()
-    db = PostgreReadOnly(**config)
+    db = ctx.request_context.lifespan_context.db
 
     try:
         schema = await db._get_db_schema()
@@ -222,10 +190,9 @@ async def get_schema(table_name: str | None = None) -> str:
 
 
 @mcp.tool("list_tables")
-async def list_tables() -> str:
+async def list_tables(ctx: Context) -> str:
     """List all tables in the database."""
-    config = get_postgres_config()
-    db = PostgreReadOnly(**config)
+    db = ctx.request_context.lifespan_context.db
 
     try:
         tables = await db.get_tables()
