@@ -8,3 +8,10 @@ dependencies = [
     "asyncpg==0.30.0",
     "mcp[cli]==1.10.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pandas>=2.3.1",
+    "psycopg2-binary>=2.9.10",
+    "sqlalchemy>=2.0.41",
+]

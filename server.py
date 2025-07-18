@@ -18,7 +18,7 @@ class PostgreReadOnly:
         pool = await asyncpg.create_pool(
             user="postgres",
             password="postgres",
-            database="learning_management_system",
+            database="sharing_session",
             host="localhost",
             port=5432,
         )
